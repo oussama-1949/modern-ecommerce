@@ -1,0 +1,182 @@
+import React, { useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import lintRemover from '../assets/photo_2026-01-22_15-11-18.jpg';
+import { useNavigate } from 'react-router-dom';
+
+const products = [
+  {
+    id: '1',
+    name: 'مزيل الوبر الكهربائي',
+    price: 119,
+    oldPrice: 250,
+    desc: 'تمريرة بسيطة تعيد لملابسك مظهرها الجديد في ثوانٍ.',
+    details: [
+      'سريع وفعّال: يزيل الوبر والبقع في ثوانٍ، ويعيد للملابس مظهرها الجديد.',
+      'آمن على الأقمشة: مناسب لجميع الأقمشة مثل الصوف، القطن، والحرير.',
+      'قابل للشحن ومحمول: خفيف الوزن وسهل الحمل.',
+      'سهولة الاستخدام والتنظيف.',
+    ],
+    img: lintRemover,
+    stock: 8,
+    viewers: 9,
+  },
+];
+
+export default function ProductDetail() {
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const product = products.find((p) => p.id === id);
+
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    address: '',
+  });
+
+  const [quantity, setQuantity] = useState(1);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const decreaseQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
+  const increaseQuantity = () => setQuantity(prev => Math.min(product!.stock, prev + 1));
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload = {
+      ...formData,
+      product: product?.name,
+      quantity,
+      totalPrice: product!.price * quantity,
+    };
+    navigate('/checkout', { state: payload });
+  };
+
+  if (!product)
+    return (
+      <p className="p-6 text-center text-red-500 font-semibold">المنتج غير موجود</p>
+    );
+
+  return (
+    <div className="bg-gray-50 min-h-screen flex flex-col font-arabic">
+      <Header />
+
+      <main className="flex-1 max-w-6xl mx-auto px-6 py-12 grid md:grid-cols-2 gap-12">
+        {/* Image */}
+         <div className="bg-white rounded-2xl shadow-md h-100 flex items-center justify-center overflow-hidden">
+          <img src={product.img} alt={product.name} className="object-cover w-full h-full" />
+        </div>
+
+        {/* Details */}
+        <div className="flex flex-col space-y-4">
+          <h1 className="text-4xl font-bold mb-2 text-[#614b96]">{product.name}</h1>
+          <p className="text-gray-600">{product.desc}</p>
+
+          <div className="flex items-center gap-4 mb-4">
+            <span className="text-3xl font-bold bg-gradient-to-r from-[#614b96] to-[#916fc2] bg-clip-text text-transparent">
+              {product.price} د.م
+            </span>
+            <span className="line-through text-gray-400">{product.oldPrice} د.م</span>
+          </div>
+
+          <p className="text-sm text-red-500">
+            سارع! فقط {product.stock} قطعة متبقية
+          </p>
+          <p className="text-sm text-gray-500">
+            يشاهده {product.viewers} متصفح الآن
+          </p>
+
+          {/* Order Form */}
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white p-6 rounded-2xl shadow-md space-y-4 mb-6"
+          >
+            <h2 className="text-xl font-semibold text-center mb-2 bg-gradient-to-r from-[#614b96] to-[#916fc2] bg-clip-text text-transparent">
+              معلومات الطلب
+            </h2>
+
+            <input
+              type="text"
+              name="name"
+              placeholder="الاسم الكامل"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#614b96]"
+            />
+
+            <input
+              type="tel"
+              name="phone"
+              placeholder="رقم الهاتف"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#614b96]"
+            />
+
+            <textarea
+              name="address"
+              placeholder="المدينة"
+              value={formData.address}
+              onChange={handleChange}
+              required
+              rows={3}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#614b96]"
+            />
+
+            {/* Quantity selector */}
+            <div className="flex items-center justify-center gap-4">
+              <button
+                type="button"
+                onClick={decreaseQuantity}
+                className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+              >
+                -
+              </button>
+              <span className="text-lg font-semibold">{quantity}</span>
+              <button
+                type="button"
+                onClick={increaseQuantity}
+                className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+              >
+                +
+              </button>
+            </div>
+               <p className="text-center text-gray-500 mt-2">
+              المجموع: <span className="font-bold">{product.price * quantity} د.م</span>
+            </p>
+
+            <button
+              type="submit"
+              className="w-full py-3 rounded-lg text-white bg-gradient-to-r from-[#614b96] to-[#916fc2] hover:from-[#916fc2] hover:to-[#614b96] transition"
+            >
+              تأكيد الطلب
+            </button>
+
+         
+          </form>
+
+          {/* Features */}
+          <ul className="list-disc pl-5 space-y-2 text-gray-700 mb-6">
+            {product.details.map((detail, idx) => (
+              <li key={idx}>{detail}</li>
+            ))}
+          </ul>
+
+          <Link
+            to="/products"
+            className="text-[#614b96] hover:underline font-semibold"
+          >
+            &larr; العودة إلى المنتجات
+          </Link>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
