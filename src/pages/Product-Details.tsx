@@ -44,16 +44,37 @@ export default function ProductDetail() {
   const decreaseQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
   const increaseQuantity = () => setQuantity(prev => Math.min(product!.stock, prev + 1));
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const payload = {
-      ...formData,
-      product: product?.name,
-      quantity,
-      totalPrice: product!.price * quantity,
-    };
-    navigate('/checkout', { state: payload });
+const [loading, setLoading] = useState(false);
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  setLoading(true); // start loading
+
+  const payload = {
+    ...formData,
+    product: product?.name,
+    quantity,
+    price: product!.price,
   };
+
+  try {
+    const res = await fetch('http://localhost:5000/order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    // optional: wait a bit to show the loader
+    await new Promise((r) => setTimeout(r, 1000));
+
+    navigate('/checkout', { state: payload });
+  } catch (err) {
+    console.error('Error sending order:', err);
+    alert('حدث خطأ أثناء إرسال الطلب. حاول مرة أخرى.');
+    setLoading(false);
+  }
+};
 
   if (!product)
     return (
@@ -150,12 +171,15 @@ export default function ProductDetail() {
               المجموع: <span className="font-bold">{product.price * quantity} د.م</span>
             </p>
 
-            <button
-              type="submit"
-              className="w-full py-3 rounded-lg text-white bg-gradient-to-r from-[#614b96] to-[#916fc2] hover:from-[#916fc2] hover:to-[#614b96] transition"
-            >
-              تأكيد الطلب
-            </button>
+      <button
+  type="submit"
+  disabled={loading}
+  className={`w-full py-3 rounded-lg text-white ${
+    loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-[#614b96] to-[#916fc2] hover:from-[#916fc2] hover:to-[#614b96]'
+  } transition`}
+>
+  {loading ? 'جاري معالجة طلبك...' : 'تأكيد الطلب'}
+</button>
 
          
           </form>
