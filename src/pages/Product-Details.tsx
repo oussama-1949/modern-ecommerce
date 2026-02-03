@@ -59,11 +59,16 @@ const handleSubmit = async (e: React.FormEvent) => {
   };
 
   try {
-    const res = await fetch('/api/order', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
+   const res = await fetch('/api/order', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(payload),
+});
+
+if (!res.ok) {
+  throw new Error('Request failed');
+}
+
 
     // optional: wait a bit to show the loader
     await new Promise((r) => setTimeout(r, 1000));
