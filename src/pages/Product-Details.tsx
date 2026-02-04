@@ -3,6 +3,11 @@ import { useParams, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import lintRemover from '../assets/photo_2026-01-22_15-11-18.jpg';
+import lintRemover2 from '../../dist/assets/test2.jpg'
+import lintRemover3 from '../../dist/assets/3.jpg'
+import lintRemover4 from '../../dist/assets/4.jpg'
+import lintRemover5 from '../../dist/assets/5.jpg'
+
 import { useNavigate } from 'react-router-dom';
 
 const products = [
@@ -21,8 +26,16 @@ const products = [
     img: lintRemover,
     stock: 8,
     viewers: 9,
+    gallery: [
+      { src: lintRemover, caption: 'المنتج من الأمام' },
+      { src: lintRemover2, caption: 'المنتج من الخلف' },
+      { src: lintRemover3, caption: 'قريب من القاعدة' },
+      { src: lintRemover4, caption: 'المنتج أثناء الاستخدام' },
+      { src: lintRemover5, caption: 'مرفق مع الملحقات' },
+    ],
   },
 ];
+
 
 export default function ProductDetail() {
   const navigate = useNavigate();
@@ -58,28 +71,29 @@ const handleSubmit = async (e: React.FormEvent) => {
     price: product!.price,
   };
 
-  try {
-   const res = await fetch('/api/order', {
+try {
+const res = await fetch('/api/order', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify(payload),
 });
 
-if (!res.ok) {
-  throw new Error('Request failed');
+
+  console.log('Fetch response status:', res.status); // ✅ See HTTP status
+  console.log('Fetch response ok:', res.ok);
+
+  const data = await res.json(); // Parse response
+  console.log('Response from /api/order:', data);
+
+  if (!res.ok) throw new Error('Request failed');
+
+  navigate('/checkout', { state: payload });
+} catch (err) {
+  console.error('Error sending order:', err);
+  alert('حدث خطأ أثناء إرسال الطلب. حاول مرة أخرى.');
+  setLoading(false);
 }
-
-
-    // optional: wait a bit to show the loader
-    await new Promise((r) => setTimeout(r, 1000));
-
-    navigate('/checkout', { state: payload });
-  } catch (err) {
-    console.error('Error sending order:', err);
-    alert('حدث خطأ أثناء إرسال الطلب. حاول مرة أخرى.');
-    setLoading(false);
-  }
-};
+}
 
   if (!product)
     return (
@@ -91,30 +105,6 @@ if (!res.ok) {
       <Header />
 
       <main className="flex-1 max-w-6xl mx-auto px-6 py-12 grid md:grid-cols-2 gap-12">
-        {/* Image */}
-         <div className="bg-white rounded-2xl shadow-md h-100 flex items-center justify-center overflow-hidden">
-          <img src={product.img} alt={product.name} className="object-cover w-full h-full" />
-        </div>
-
-        {/* Details */}
-        <div className="flex flex-col space-y-4">
-          <h1 className="text-4xl font-bold mb-2 text-[#614b96]">{product.name}</h1>
-          <p className="text-gray-600">{product.desc}</p>
-
-          <div className="flex items-center gap-4 mb-4">
-            <span className="text-3xl font-bold bg-gradient-to-r from-[#614b96] to-[#916fc2] bg-clip-text text-transparent">
-              {product.price} د.م
-            </span>
-            <span className="line-through text-gray-400">{product.oldPrice} د.م</span>
-          </div>
-
-          <p className="text-sm text-red-500">
-            سارع! فقط {product.stock} قطعة متبقية
-          </p>
-          <p className="text-sm text-gray-500">
-            يشاهده {product.viewers} متصفح الآن
-          </p>
-
           {/* Order Form */}
           <form
             onSubmit={handleSubmit}
@@ -188,6 +178,42 @@ if (!res.ok) {
 
          
           </form>
+        {/* Image */}
+     {/* Product Gallery */}
+<div className="mt-6 grid grid-cols-2 md:grid-cols-5 gap-4">
+  {product.gallery?.map((item, idx) => (
+    <div key={idx} className="flex flex-col items-center">
+      <img
+        src={item.src}
+        alt={item.caption}
+        className="w-full h-24 md:h-32 object-cover rounded-lg shadow-sm"
+      />
+      <p className="text-sm text-center mt-1 text-gray-600">{item.caption}</p>
+    </div>
+  ))}
+</div>
+
+
+        {/* Details */}
+        <div className="flex flex-col space-y-4">
+          <h1 className="text-4xl font-bold mb-2 text-[#614b96]">{product.name}</h1>
+          <p className="text-gray-600">{product.desc}</p>
+
+          <div className="flex items-center gap-4 mb-4">
+            <span className="text-3xl font-bold bg-gradient-to-r from-[#614b96] to-[#916fc2] bg-clip-text text-transparent">
+              {product.price} د.م
+            </span>
+            <span className="line-through text-gray-400">{product.oldPrice} د.م</span>
+          </div>
+
+          <p className="text-sm text-red-500">
+            سارع! فقط {product.stock} قطعة متبقية
+          </p>
+          <p className="text-sm text-gray-500">
+            يشاهده {product.viewers} متصفح الآن
+          </p>
+
+        
 
           {/* Features */}
           <ul className="list-disc pl-5 space-y-2 text-gray-700 mb-6">
