@@ -2,7 +2,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Products from './pages/Products';
-import ProductDetail from './pages/Product-Details'; // file name match
+import ProductDetail from './assets/Product-Details'; // file name match
 import CheckoutPage from './pages/checkout';
 
 export default function App() {  // ✅ default export is required

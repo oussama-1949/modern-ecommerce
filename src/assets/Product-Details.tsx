@@ -3,10 +3,10 @@ import { useParams, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import lintRemover from '../assets/photo_2026-01-22_15-11-18.jpg';
-import lintRemover2 from '../../dist/assets/test2.jpg'
-import lintRemover3 from '../../dist/assets/3.jpg'
-import lintRemover4 from '../../dist/assets/4.jpg'
-import lintRemover5 from '../../dist/assets/5.jpg'
+import lintRemover2 from '../../src/assets/test2.jpg'
+import lintRemover3 from '../../src/assets/3.jpg'
+import lintRemover4 from '../../src/assets/4.jpg'
+import lintRemover5 from '../../src/assets/5.jpg'
 
 import { useNavigate } from 'react-router-dom';
 
