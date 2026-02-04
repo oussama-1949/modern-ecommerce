@@ -180,6 +180,8 @@ const res = await fetch('/api/order', {
           </form>
         {/* Image */}
      {/* Product Gallery */}
+          {/* Product Gallery */}
+
 <div className="mt-6 grid grid-cols-2 md:grid-cols-2 gap-4">
   {product.gallery?.map((item, idx) => (
     <div key={idx} className="flex flex-col items-center">
