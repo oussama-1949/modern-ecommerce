@@ -3,10 +3,11 @@ import { useParams, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import lintRemover from '../assets/photo_2026-01-22_15-11-18.jpg';
-import lintRemover2 from '../../src/assets/test2.jpg'
-import lintRemover3 from '../../src/assets/3.jpg'
-import lintRemover4 from '../../src/assets/4.jpg'
-import lintRemover5 from '../../src/assets/5.jpg'
+import lintRemover2 from '../assets/test2.jpg'
+import lintRemover3 from '../assets/3.jpg'
+import lintRemover4 from '../assets/4.jpg'
+import lintRemover5 from '../assets/5.jpg'
+
 
 import { useNavigate } from 'react-router-dom';
 
@@ -71,19 +72,26 @@ const handleSubmit = async (e: React.FormEvent) => {
     price: product!.price,
   };
 
+  console.log("data good saved ",payload)
+
+
+
 try {
-const res = await fetch('/api/order', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(payload),
-});
+   const API_URL =
+      window.location.hostname === 'localhost'
+        ? 'http://localhost:5000' // local Express backend
+        : 'https://ecommerce-six-murex-37.vercel.app/api'; // Vercel serverless
 
+    const res = await fetch(`${API_URL}/order`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
 
-  console.log('Fetch response status:', res.status); // ✅ See HTTP status
-  console.log('Fetch response ok:', res.ok);
+    if (!res.ok) throw new Error('Request failed');
 
-  const data = await res.json(); // Parse response
-  console.log('Response from /api/order:', data);
+    const data = await res.json();
+    console.log('Response from /api/order:', data);
 
   if (!res.ok) throw new Error('Request failed');
 
